@@ -1,0 +1,121 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>登录</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .btn-login {
+            cursor: pointer;
+            background: #2fdd3d;
+            color:#FFF;
+        }
+        label.error {
+            position: absolute;
+            right: 18px;
+            top: 9px;
+            color: #ef392b;
+            font-size: 12px;
+            z-index:3;
+        }
+        .pwd+.error{
+            right: 60px;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="text-primary text-center" style="padding-top:20px">CG.NET 代码在线生成工具</h2>
+    <div style="padding: 80px 100px 10px;">
+        <form class="bs-example bs-example-form" style="width:300px;margin:0 auto;" id="form">
+            @Html.AntiForgeryToken()
+            <div class="input-group">
+                <span class="input-group-addon">服务器类型:</span>
+                <select class="form-control" name="dbtype" required>
+                    <option value="MSSQL">SQL Server</option>
+                    <option value="ORACLE">ORACLE</option>
+                </select>
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon">服务器地址:</span>
+                <input type="text" class="form-control" name="server" required />
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon">登　录　名:</span>
+                <input type="text" class="form-control" name="name" required />
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon">密　　　码:</span>
+                <input type="text" class="form-control pwd" name="pwd" required />
+                <span class="bg-primary input-group-addon btn-login" id="Login">登录</span>
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon">数　据　库:</span>
+                <select class="form-control" name="database" id="database"></select>
+            </div>
+            <br>
+            <p>
+                <button type="button" class="btn btn-primary btn-block" id="LoginDB">进入系统</button>
+            </p>
+        </form>
+    </div>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/messages_zh.js"></script>
+    <script src="~/Scripts/layer/layer.js"></script>
+    <script>
+        var type = 0;
+        $("#Login").click(function () {
+            type = 1;
+            $("#form").submit();
+        })
+        $("#Login").click(function () {
+            type = 2;
+            $("#form").submit();
+        })
+
+        $("#form").validate({
+            success: "valid",
+            submitHandler: function (form) {
+                var data = $(form).serialize();
+                var PostUrl = "/Home/GetDatebase";
+                if (type != 1) {
+                    PostUrl = "";
+                }
+                $.ajax({
+                    url: PostUrl,
+                    data: data,
+                    type: 'post',
+                    success: function (data) {
+                        if (data.Code == 0) {
+                            var options = "";
+                            var Databases = data.Data;
+                            if (Databases != null && Databases.length > 0) {
+                                for (var i = 0; i < Databases.length; i++) {
+                                    var name = Databases[i];
+                                    options += '<option value="' + name + '">' + name +'</option>';
+                                }
+                            }
+                            $("#database").html(options);
+                        } else {
+                            layer.msg(data.Mess, { icon: 2, time: 2000 });
+                        }
+                    },
+                    error: function (XmlHttpRequest, textStatus, errorThrown) {
+                        layer.msg('服务器错误', { icon: 2, time: 2000 });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
