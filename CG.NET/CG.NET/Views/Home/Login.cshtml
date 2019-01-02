@@ -1,74 +1,68 @@
-﻿
-@{
-    Layout = null;
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "登录";
 }
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>登录</title>
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+@section Styles{
     <style>
         .btn-login {
             cursor: pointer;
             background: #2fdd3d;
-            color:#FFF;
+            color: #FFF;
         }
+
         label.error {
             position: absolute;
             right: 18px;
             top: 9px;
             color: #ef392b;
             font-size: 12px;
-            z-index:3;
+            z-index: 3;
         }
-        .pwd+.error{
+
+        .pwd + .error {
             right: 60px;
         }
     </style>
-</head>
-<body>
-    <h2 class="text-primary text-center" style="padding-top:20px">CG.NET 代码在线生成工具</h2>
-    <div style="padding: 80px 100px 10px;">
-        <form class="bs-example bs-example-form" style="width:300px;margin:0 auto;" id="form">
-            @Html.AntiForgeryToken()
-            <div class="input-group">
-                <span class="input-group-addon">服务器类型:</span>
-                <select class="form-control" name="dbtype" required>
-                    <option value="MSSQL">SQL Server</option>
-                    <option value="ORACLE">ORACLE</option>
-                </select>
-            </div>
-            <br>
-            <div class="input-group">
-                <span class="input-group-addon">服务器地址:</span>
-                <input type="text" class="form-control" name="server" required />
-            </div>
-            <br>
-            <div class="input-group">
-                <span class="input-group-addon">登　录　名:</span>
-                <input type="text" class="form-control" name="name" required />
-            </div>
-            <br>
-            <div class="input-group">
-                <span class="input-group-addon">密　　　码:</span>
-                <input type="text" class="form-control pwd" name="pwd" required />
-                <span class="bg-primary input-group-addon btn-login" id="Login">登录</span>
-            </div>
-            <br>
-            <div class="input-group">
-                <span class="input-group-addon">数　据　库:</span>
-                <select class="form-control" name="database" id="database"></select>
-            </div>
-            <br>
-            <p>
-                <button type="button" class="btn btn-primary btn-block" id="LoginDB">进入系统</button>
-            </p>
-        </form>
-    </div>
-    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+}
+<h2 class="text-primary text-center" style="padding-top:20px">CG.NET 代码在线生成工具</h2>
+<div style="padding: 80px 100px 10px;">
+    <form class="bs-example bs-example-form" style="width:300px;margin:0 auto;" id="form">
+        @Html.AntiForgeryToken()
+        <div class="input-group">
+            <span class="input-group-addon">服务器类型:</span>
+            <select class="form-control" name="dbtype" required>
+                <option value="MSSQL">SQL Server</option>
+                <option value="ORACLE">ORACLE</option>
+            </select>
+        </div>
+        <br>
+        <div class="input-group">
+            <span class="input-group-addon">服务器地址:</span>
+            <input type="text" class="form-control" name="server" required />
+        </div>
+        <br>
+        <div class="input-group">
+            <span class="input-group-addon">登　录　名:</span>
+            <input type="text" class="form-control" name="name" required />
+        </div>
+        <br>
+        <div class="input-group">
+            <span class="input-group-addon">密　　　码:</span>
+            <input type="text" class="form-control pwd" name="pwd" required />
+            <span class="bg-primary input-group-addon btn-login" id="Login">登录</span>
+        </div>
+        <br>
+        <div class="input-group">
+            <span class="input-group-addon">数　据　库:</span>
+            <select class="form-control" name="database" id="database"></select>
+        </div>
+        <br>
+        <p>
+            <button type="button" class="btn btn-primary btn-block" id="LoginDB">进入系统</button>
+        </p>
+    </form>
+</div>
+@section Scripts{
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/messages_zh.js"></script>
     <script src="~/Scripts/layer/layer.js"></script>
@@ -81,7 +75,7 @@
         })
         $("#LoginDB").click(function () {
             type = 2;
-            $("#database").attr("required",true);
+            $("#database").attr("required", true);
             $("#form").submit();
         })
 
@@ -123,5 +117,4 @@
             }
         });
     </script>
-</body>
-</html>
+}
