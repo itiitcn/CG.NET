@@ -19,7 +19,6 @@ namespace CG.NET.Controllers
             tools = new MSDBTools();
         }
 
-
         public ActionResult Index()
         {
             ServerModel model = Session["DB"] as ServerModel;
