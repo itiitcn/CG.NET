@@ -76,10 +76,12 @@
         var type = 0;
         $("#Login").click(function () {
             type = 1;
+            $("#database").attr("required", false);
             $("#form").submit();
         })
-        $("#Login").click(function () {
+        $("#LoginDB").click(function () {
             type = 2;
+            $("#database").attr("required",true);
             $("#form").submit();
         })
 
@@ -89,7 +91,7 @@
                 var data = $(form).serialize();
                 var PostUrl = "/Home/GetDatebase";
                 if (type != 1) {
-                    PostUrl = "";
+                    PostUrl = "/Home/LoginDB";
                 }
                 $.ajax({
                     url: PostUrl,
@@ -97,15 +99,19 @@
                     type: 'post',
                     success: function (data) {
                         if (data.Code == 0) {
-                            var options = "";
-                            var Databases = data.Data;
-                            if (Databases != null && Databases.length > 0) {
-                                for (var i = 0; i < Databases.length; i++) {
-                                    var name = Databases[i];
-                                    options += '<option value="' + name + '">' + name +'</option>';
+                            if (type != 1) {
+                                location.href = "/Home/Index";
+                            } else {
+                                var options = "";
+                                var Databases = data.Data;
+                                if (Databases != null && Databases.length > 0) {
+                                    for (var i = 0; i < Databases.length; i++) {
+                                        var name = Databases[i];
+                                        options += '<option value="' + name + '">' + name + '</option>';
+                                    }
                                 }
+                                $("#database").html(options);
                             }
-                            $("#database").html(options);
                         } else {
                             layer.msg(data.Mess, { icon: 2, time: 2000 });
                         }

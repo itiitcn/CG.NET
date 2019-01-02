@@ -19,8 +19,32 @@ namespace CG.NET.Controllers
             tools = new MSDBTools();
         }
 
+
+        public ActionResult Index()
+        {
+            ServerModel model = Session["DB"] as ServerModel;
+            if (model == null)
+            {
+                return RedirectToAction("Login");
+            }
+            tools.Login(model);
+            DataTable dt = tools.ExcuteDataTable(string.Format(SQLStr.Tables, model.database), System.Data.CommandType.Text);
+            List<string> Tables = new List<string>();
+            foreach (DataRow item in dt.Rows)
+            {
+                Tables.Add(item[0].ToString());
+            }
+            ViewBag.Tables = Tables;
+            return View();
+        }
+
+
         public ActionResult Login()
         {
+            if (Session["DB"] != null)
+            {
+                return RedirectToAction("Index");
+            }
             return View();
         }
 
@@ -62,9 +86,41 @@ namespace CG.NET.Controllers
             hs.Add("Mess", Mess);
             hs.Add("Code", Code);
             return Json(hs);
-            
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult LoginDB(ServerModel model)
+        {
+            Hashtable hs = new Hashtable();
+            int Code = 0;
+            string Mess = "";
+            if (ModelState.IsValid&&!string.IsNullOrWhiteSpace(model.database))
+            {
+                try
+                {
+                    if (model.dbtype == "MSSQL")
+                    {
+                        Session["DB"] = model;
+                        Code = 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Code = 500;
+                    Mess = "服务器错误";
+                }
+            }
+            else
+            {
+                Code = 500;
+                Mess = GetErrorsMessage();
+            }
+            hs.Add("Mess", Mess);
+            hs.Add("Code", Code);
+            return Json(hs);
+        }
 
     }
 }
