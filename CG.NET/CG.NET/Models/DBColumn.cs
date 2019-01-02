@@ -10,14 +10,11 @@ namespace CG.NET.Models
 {
     public class DBColumn
     {
-
         public DBColumn()
         {
 
         }
-
         private char separator { get; set; }
-
         public DBColumn(DataRow dr,string DBType)
         {
             if (dr != null)

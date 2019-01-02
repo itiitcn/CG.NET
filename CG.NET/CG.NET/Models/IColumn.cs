@@ -20,7 +20,6 @@ namespace CG.NET.Models
             this.DB = new DBColumn(dr, DBType);
             this.Col = new DBColumn(this.DB, separator);
         }
-
         /// <summary>
         /// 数据库列
         /// </summary>
