@@ -12,12 +12,6 @@ namespace CG.NET.Controllers
 {
     public class HomeController : BaseController
     {
-        private MSDBTools tools;
-
-        public HomeController()
-        {
-            tools = new MSDBTools();
-        }
 
         public ActionResult Index()
         {
@@ -26,15 +20,15 @@ namespace CG.NET.Controllers
             {
                 return RedirectToAction("Login");
             }
-            tools.Login(model);
-            DataTable dt = tools.ExcuteDataTable(string.Format(SQLStr.MSSQLTables, model.database), System.Data.CommandType.Text);
+            
+            DataTable dt = DBTools.ExcuteDataTable(SQLStr.Tables(model.database), model);
             List<string> tables = new List<string>();
             if (dt != null && dt.Rows.Count > 0)
                 foreach (DataRow item in dt.Rows)
                 {
                     tables.Add(item[0].ToString());
                 }
-            dt = tools.ExcuteDataTable(string.Format(SQLStr.MSSQLAllColumns, model.database), System.Data.CommandType.Text);
+            dt = DBTools.ExcuteDataTable(SQLStr.AllColumns(model.database), model);
             List<DBColumn> columns = new List<DBColumn>();
             if (dt != null && dt.Rows.Count > 0)
                 foreach (DataRow item in dt.Rows)
@@ -68,17 +62,13 @@ namespace CG.NET.Controllers
             {
                 try
                 {
-                    if (model.dbtype == "MSSQL")
+                    DataTable dt = DBTools.ExcuteDataTable(SQLStr.Datatables(), model);
+                    List<string> Data = new List<string>();
+                    foreach (DataRow item in dt.Rows)
                     {
-                        tools.Login(model);
-                        DataTable dt = tools.ExcuteDataTable(SQLStr.MSSQLDatatables, System.Data.CommandType.Text);
-                        List<string> Data = new List<string>();
-                        foreach (DataRow item in dt.Rows)
-                        {
-                            Data.Add(item[0].ToString());
-                        }
-                        hs.Add("Data", Data);
+                        Data.Add(item[0].ToString());
                     }
+                    hs.Add("Data", Data);
                 }
                 catch (Exception ex)
                 {
@@ -108,11 +98,8 @@ namespace CG.NET.Controllers
             {
                 try
                 {
-                    if (model.dbtype == "MSSQL")
-                    {
-                        Session["DB"] = model;
-                        Code = 0;
-                    }
+                    Session["DB"] = model;
+                    Code = 0;
                 }
                 catch (Exception ex)
                 {

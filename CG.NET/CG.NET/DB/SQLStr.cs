@@ -7,14 +7,70 @@ namespace CG.NET.DB
 {
     public class SQLStr
     {
-        public const string MSSQLDatatables = @"SELECT Name FROM Master..SysDatabases ORDER BY Name";
 
 
-        public const string MSSQLTables = @"USE {0}
+        public static string Datatables()
+        {
+            switch (DBConfig.DBType)
+            {
+                case "oracle":
+                    return ORACLEDatatables;
+                case "mssql":
+                    return MSSQLDatatables;
+                default:
+                    return "";
+            }
+        }
+
+        public static string Tables(string DBbase)
+        {
+            switch (DBConfig.DBType)
+            {
+                case "oracle":
+                    return string.Format(ORACLETables, DBbase);
+                case "mssql":
+                    return string.Format(MSSQLTables, DBbase);
+                default:
+                    return "";
+            }
+        }
+
+
+        public static string Columns(string DBbase,string table)
+        {
+            switch (DBConfig.DBType)
+            {
+                case "oracle":
+                    return string.Format(ORACLEColumns, DBbase, table);
+                case "mssql":
+                    return string.Format(MSSQLColumns, DBbase, table);
+                default:
+                    return "";
+            }
+        }
+
+        public static string AllColumns(string DBbase)
+        {
+            switch (DBConfig.DBType)
+            {
+                case "oracle":
+                    return string.Format(ORACLEAllColumns, DBbase);
+                case "mssql":
+                    return string.Format(MSSQLAllColumns, DBbase);
+                default:
+                    return "";
+            }
+        }
+
+
+        private const string MSSQLDatatables = @"SELECT Name FROM Master..SysDatabases ORDER BY Name";
+
+
+        private const string MSSQLTables = @"USE {0}
                                        SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_CATALOG='{0}' and TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME";
 
 
-        public const string MESQLColumns = @"USE {0}
+        private const string MSSQLColumns = @"USE {0}
                                         select 
                                         c.name as [Name],
                                         t.name as [Type],
@@ -32,7 +88,7 @@ namespace CG.NET.DB
                                         where   (o.xtype='u' OR o.xtype='U') And o.name='{1}' and t.name not in('sysname','IDate','IInt','ITime','VAcco','VCode','VGroup','VName','VPass','VSeat')
                                         order by c.colid";
 
-        public const string MSSQLAllColumns = @"USE {0}
+        private const string MSSQLAllColumns = @"USE {0}
                                     select 
                                     c.name as [Name],
                                     t.name as [Type],
@@ -53,12 +109,11 @@ namespace CG.NET.DB
                                     order by c.colid";
 
 
-        public const string ORACLEDatatables = @"select tablespace_name from user_tablespaces";
+        private const string ORACLEDatatables = @"select tablespace_name from user_tablespaces";
 
+        private const string ORACLETables = @"select TABLE_NAME from all_tables t where t.TABLESPACE_NAME='{0}'";
 
-        public const string ORACLETables = @"select TABLE_NAME from all_tables t where t.OWNER='{0}'";
-
-        public const string ORACLEColumns = @"select 
+        private const string ORACLEColumns = @"select 
                         c.COLUMN_NAME Name,
                         c.DATA_TYPE TYPE,
                         c.DATA_LENGTH Length,
@@ -79,7 +134,7 @@ namespace CG.NET.DB
                         and c.owner='{0}'
                         ";
 
-        public const string ORACLEAllColumns = @"select 
+        private const string ORACLEAllColumns = @"select 
                         c.COLUMN_NAME Name,
                         c.DATA_TYPE TYPE,
                         c.DATA_LENGTH Length,
