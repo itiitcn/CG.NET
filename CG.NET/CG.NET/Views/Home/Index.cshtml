@@ -1,0 +1,63 @@
+﻿@using CG.NET.Models;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "首页";
+    List<string> tables = ViewBag.tables as List<string>;
+    List<DBColumn> columns = ViewBag.columns as List<DBColumn>;
+}
+@section Styles{
+    <link href="~/Content/layoutit.css" rel="stylesheet" />
+}
+<div class="container">
+    <div class="row">
+        <div class="">
+            <div class="sidebar-nav">
+                <ul class="nav nav-list accordion-group">
+                    <li class="nav-header">
+                        数据库表
+                        <select class="form-control" id="Tables">
+                            @foreach (string name in tables)
+                            {
+                                <option value="@name">@name</option>
+                            }
+                        </select>
+                    </li>
+                    @{
+                        if (tables != null && tables.Count > 0 && columns != null && columns.Count > 0)
+                        {
+                            foreach (string name in tables)
+                            {
+                                <li class="boxes" id="@name" style="@(name==tables[0]?"display:block":"")">
+                                    @{
+                                        foreach (var column in columns)
+                                        {
+                                            if (column.TableName == name)
+                                            {
+                                                <div class="box box-element">
+                                                    <div class="preview">@column.Name
+                                                        <span>
+                                                            @(column.Details)
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </li>
+                            }
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+ <script>
+     $("#Tables").change(function () {
+         var name = $(this).val();
+         $(".boxes").hide();
+         $("#" + name).show();
+     })
+    </script>   
+ }

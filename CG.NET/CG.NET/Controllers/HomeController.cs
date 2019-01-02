@@ -28,13 +28,22 @@ namespace CG.NET.Controllers
                 return RedirectToAction("Login");
             }
             tools.Login(model);
-            DataTable dt = tools.ExcuteDataTable(string.Format(SQLStr.Tables, model.database), System.Data.CommandType.Text);
-            List<string> Tables = new List<string>();
-            foreach (DataRow item in dt.Rows)
-            {
-                Tables.Add(item[0].ToString());
-            }
-            ViewBag.Tables = Tables;
+            DataTable dt = tools.ExcuteDataTable(string.Format(SQLStr.MSSQLTables, model.database), System.Data.CommandType.Text);
+            List<string> tables = new List<string>();
+            if (dt != null && dt.Rows.Count > 0)
+                foreach (DataRow item in dt.Rows)
+                {
+                    tables.Add(item[0].ToString());
+                }
+            dt = tools.ExcuteDataTable(string.Format(SQLStr.MSSQLAllColumns, model.database), System.Data.CommandType.Text);
+            List<DBColumn> columns = new List<DBColumn>();
+            if (dt != null && dt.Rows.Count > 0)
+                foreach (DataRow item in dt.Rows)
+                {
+                    columns.Add(new DBColumn(item, model.dbtype));
+                }
+            ViewBag.columns = columns;
+            ViewBag.tables = tables;
             return View();
         }
 
@@ -60,10 +69,10 @@ namespace CG.NET.Controllers
             {
                 try
                 {
-                    if (model.dbtype=="MSSQL")
+                    if (model.dbtype == "MSSQL")
                     {
                         tools.Login(model);
-                        DataTable dt = tools.ExcuteDataTable(SQLStr.Datatables, System.Data.CommandType.Text);
+                        DataTable dt = tools.ExcuteDataTable(SQLStr.MSSQLDatatables, System.Data.CommandType.Text);
                         List<string> Data = new List<string>();
                         foreach (DataRow item in dt.Rows)
                         {
@@ -96,7 +105,7 @@ namespace CG.NET.Controllers
             Hashtable hs = new Hashtable();
             int Code = 0;
             string Mess = "";
-            if (ModelState.IsValid&&!string.IsNullOrWhiteSpace(model.database))
+            if (ModelState.IsValid && !string.IsNullOrWhiteSpace(model.database))
             {
                 try
                 {
