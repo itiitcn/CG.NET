@@ -25,24 +25,22 @@
                     @{
                         if (tables != null && tables.Count > 0 && columns != null && columns.Count > 0)
                         {
-                            foreach (string name in tables)
-                            {
-                                <li class="boxes" id="@name" style="@(name==tables[0]?"display:block":"")">
-                                    @{
-                                        foreach (var column in columns)
+                            <li class="boxes" id="Columns" style="display:block;">
+                                @{
+                                    foreach (var column in columns)
+                                    {
+                                        if (column.TableName.ToLower() == tables[0].ToLower())
                                         {
-                                            if (column.TableName == name)
-                                            {
-                                                <div class="box box-element">
-                                                    <div class="preview">@column.Name
-                                                        <span>@(column.Details)</span>
-                                                    </div>
+                                            <div class="box box-element">
+                                                <div class="preview">
+                                                    @column.Name
+                                                    <span>@(column.Details)</span>
                                                 </div>
-                                            }
+                                            </div>
                                         }
                                     }
-                                </li>
-                            }
+                                }
+                            </li>
                         }
                     }
                 </ul>
@@ -51,11 +49,40 @@
     </div>
 </div>
 @section Scripts{
- <script>
-     $("#Tables").change(function () {
-         var name = $(this).val();
-         $(".boxes").hide();
-         $("#" + name).show();
-     })
-    </script>   
- }
+    <script>
+        $("#Tables").change(function () {
+            var name = $(this).val();
+            //$(".boxes").hide();
+            //$("#" + name).show();
+            $.ajax({
+                url: "/Home/GetColumsByTable",
+                type: "POST",
+                data: { TableName: name },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+                        if (data.Code == 300) {
+                            location.reload();
+                        }
+                        else {
+                            if (data.Code == 0) {
+                                var html = "";
+                                var IData = data.Data;
+                                if (IData != null && IData.length > 0) {
+                                    for (var i = 0; i < IData.length; i++) {
+                                        var column = IData[i];
+                                        html += '<div class="box box-element"><div class="preview">' + column.Name + '<span>' + column.Details + '</span></div></div>';
+                                    }
+                                    $("#Columns").html(html);
+                                }
+                            }
+                            else {
+                                layer.msg(data.Mess, { icon: 2, time: 3000 });
+                            }
+                        }
+                    }
+                }
+            })
+        })
+    </script>
+}

@@ -86,6 +86,7 @@
                 var PostUrl = "/Home/GetDatebase";
                 if (type != 1) {
                     PostUrl = "/Home/LoginDB";
+                    layer.load(2);
                 }
                 $.ajax({
                     url: PostUrl,

@@ -1,4 +1,5 @@
-﻿using CG.NET.Utils;
+﻿using CG.NET.DB;
+using CG.NET.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -24,8 +25,25 @@ namespace CG.NET.Models
                 if (!DBNull.Value.Equals(dr["Length"])) this.Length = Convert.ToInt16(dr["Length"]);
                 if (!DBNull.Value.Equals(dr["Prec"])) this.Prec = Convert.ToByte(dr["Prec"]);
                 if (!DBNull.Value.Equals(dr["Scale"])) this.Scale = Convert.ToByte(dr["Scale"]);
-                if (!DBNull.Value.Equals(dr["IsNull"])) this.IsNull = Convert.ToBoolean(dr["IsNull"]);
-                if (!DBNull.Value.Equals(dr["PrimaryKey"])) this.PrimaryKey = Convert.ToBoolean(dr["PrimaryKey"]);
+                if (DBConfig.DBType == "oracle")
+                {
+                    if (!DBNull.Value.Equals(dr["IsNull"]))
+                    {
+                        string Isn = Convert.ToString(dr["IsNull"]);
+                        this.IsNull = Isn=="Y";
+                    }
+                    if (!DBNull.Value.Equals(dr["PrimaryKey"]))
+                    {
+                        string PK = Convert.ToString(dr["PrimaryKey"]);
+                        this.PrimaryKey = !string.IsNullOrWhiteSpace(PK);
+                    }
+                }
+                else
+                {
+                    if (!DBNull.Value.Equals(dr["IsNull"])) this.IsNull = Convert.ToBoolean(dr["IsNull"]);
+                    if (!DBNull.Value.Equals(dr["PrimaryKey"])) this.PrimaryKey = Convert.ToBoolean(dr["PrimaryKey"]);
+                }
+                
                 if (!DBNull.Value.Equals(dr["Default"])) this.Default = Convert.ToString(dr["Default"]);
                 if (!DBNull.Value.Equals(dr["Description"])) this.Description = Convert.ToString(dr["Description"]);
                 if (!DBNull.Value.Equals(dr["TableName"])) this.TableName = Convert.ToString(dr["TableName"]);

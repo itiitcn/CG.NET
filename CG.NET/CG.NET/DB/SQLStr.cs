@@ -41,7 +41,7 @@ namespace CG.NET.DB
             switch (DBConfig.DBType)
             {
                 case "oracle":
-                    return string.Format(ORACLEColumns, DBbase, table);
+                    return string.Format(ORACLEColumns, table);
                 case "mssql":
                     return string.Format(MSSQLColumns, DBbase, table);
                 default:
@@ -111,7 +111,7 @@ namespace CG.NET.DB
 
         private const string ORACLEDatatables = @"select tablespace_name from user_tablespaces";
 
-        private const string ORACLETables = @"select TABLE_NAME from all_tables t where t.TABLESPACE_NAME='{0}'";
+        private const string ORACLETables = @"select TABLE_NAME from all_tables t where t.TABLESPACE_NAME='{0}' order by TABLE_NAME";
 
         private const string ORACLEColumns = @"select 
                         c.COLUMN_NAME Name,
@@ -125,13 +125,12 @@ namespace CG.NET.DB
                         and a.COLUMN_NAME=c.COLUMN_NAME
                         and a.owner=c.owner
                         and p.constraint_name = a.constraint_name 
-                        and p.constraint_type = 'P')PrimaryKey,
-                        c.data_default "+ "\"Default\"" + @",
-                        (select COMMENTS from all_col_comments d where c.Table_Name=d.Table_Name and d.owner= c.owner and d.COLUMN_NAME= c.COLUMN_NAME) Description,
+                        and p.constraint_type = 'P'  and rownum=1)PrimaryKey,
+                        c.data_default " + "\"Default\"" + @",
+                        (select COMMENTS from all_col_comments d where c.Table_Name=d.Table_Name and d.owner= c.owner and d.COLUMN_NAME= c.COLUMN_NAME  and rownum=1) Description,
                         c.Table_Name TableName
                         from all_tab_columns c
-                        where c.Table_Name='{1}'
-                        and c.owner='{0}'
+                        where c.Table_Name='{0}'
                         ";
 
         private const string ORACLEAllColumns = @"select 
@@ -146,13 +145,12 @@ namespace CG.NET.DB
                         and a.COLUMN_NAME=c.COLUMN_NAME
                         and a.owner=c.owner
                         and p.constraint_name = a.constraint_name 
-                        and p.constraint_type = 'P')PrimaryKey,
+                        and p.constraint_type = 'P'  and rownum=1)PrimaryKey,
                         c.data_default " + "\"Default\"" + @",
-                        (select COMMENTS from all_col_comments d where c.Table_Name=d.Table_Name and d.owner= c.owner and d.COLUMN_NAME= c.COLUMN_NAME) Description,
+                        (select COMMENTS from all_col_comments d where c.Table_Name=d.Table_Name and d.owner= c.owner and d.COLUMN_NAME= c.COLUMN_NAME  and rownum=1) Description,
                         c.Table_Name TableName
                         from all_tab_columns c
-                        where c.Table_Name in (select TABLE_NAME from all_tables t where t.OWNER=c.owner)
-                        and c.owner='{0}'
+                         where c.Table_Name in (select TABLE_NAME from all_tables t where Tablespace_Name='{0}')
                         ";
 
     }
