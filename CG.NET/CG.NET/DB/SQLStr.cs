@@ -54,7 +54,7 @@ namespace CG.NET.DB
             switch (DBConfig.DBType)
             {
                 case "oracle":
-                    return string.Format(ORACLEAllColumns, DBbase);
+                    return ORACLEAllColumns;
                 case "mssql":
                     return string.Format(MSSQLAllColumns, DBbase);
                 default:
@@ -109,9 +109,9 @@ namespace CG.NET.DB
                                     order by c.colid";
 
 
-        private const string ORACLEDatatables = @"select tablespace_name from user_tablespaces";
+        private const string ORACLEDatatables = @"select default_tablespace from user_users";
 
-        private const string ORACLETables = @"select TABLE_NAME from all_tables t where t.TABLESPACE_NAME='{0}' order by TABLE_NAME";
+        private const string ORACLETables = @"SELECT TABLE_NAME FROM user_tables order by TABLE_NAME";
 
         private const string ORACLEColumns = @"select 
                         c.COLUMN_NAME Name,
@@ -120,18 +120,16 @@ namespace CG.NET.DB
                         c.DATA_PRECISION Prec,
                         c.DATA_SCALE Scale,
                         c.nullable IsNull,
-                        (select p.constraint_name from all_constraints p,all_cons_columns a
+                        (select p.constraint_name from user_constraints p,user_cons_columns a
                         where a.Table_Name=c.Table_Name 
                         and a.COLUMN_NAME=c.COLUMN_NAME
-                        and a.owner=c.owner
                         and p.constraint_name = a.constraint_name 
                         and p.constraint_type = 'P'  and rownum=1)PrimaryKey,
                         c.data_default " + "\"Default\"" + @",
-                        (select COMMENTS from all_col_comments d where c.Table_Name=d.Table_Name and d.owner= c.owner and d.COLUMN_NAME= c.COLUMN_NAME  and rownum=1) Description,
+                        (select COMMENTS from user_col_comments d where c.Table_Name=d.Table_Name and d.COLUMN_NAME= c.COLUMN_NAME  and rownum=1) Description,
                         c.Table_Name TableName
-                        from all_tab_columns c
-                        where c.Table_Name='{0}'
-                        ";
+                        from user_tab_columns c
+                        where c.Table_Name='{0}'";
 
         private const string ORACLEAllColumns = @"select 
                         c.COLUMN_NAME Name,
@@ -140,18 +138,15 @@ namespace CG.NET.DB
                         c.DATA_PRECISION Prec,
                         c.DATA_SCALE Scale,
                         c.nullable IsNull,
-                        (select p.constraint_name from all_constraints p,all_cons_columns a
+                        (select p.constraint_name from user_constraints p,user_cons_columns a
                         where a.Table_Name=c.Table_Name 
                         and a.COLUMN_NAME=c.COLUMN_NAME
-                        and a.owner=c.owner
                         and p.constraint_name = a.constraint_name 
                         and p.constraint_type = 'P'  and rownum=1)PrimaryKey,
                         c.data_default " + "\"Default\"" + @",
-                        (select COMMENTS from all_col_comments d where c.Table_Name=d.Table_Name and d.owner= c.owner and d.COLUMN_NAME= c.COLUMN_NAME  and rownum=1) Description,
+                        (select COMMENTS from user_col_comments d where c.Table_Name=d.Table_Name and d.COLUMN_NAME= c.COLUMN_NAME  and rownum=1) Description,
                         c.Table_Name TableName
-                        from all_tab_columns c
-                         where c.Table_Name in (select TABLE_NAME from all_tables t where Tablespace_Name='{0}')
-                        ";
+                        from user_tab_columns c";
 
     }
 }
